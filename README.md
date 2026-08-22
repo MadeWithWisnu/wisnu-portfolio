@@ -32,7 +32,7 @@ No server required — just open the file in a browser:
 
 ```bash
 git clone https://github.com/madewithwisnu/wisnu-portfolio.git
-cd <repo-name>
+cd wisnu-portfolio
 open index.html     # macOS
 # or double-click index.html on Windows/Linux
 ```
