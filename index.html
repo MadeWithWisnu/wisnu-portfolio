@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Made Wisnu Kusuma Putra — Backend / Full-Stack Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220;
+    --panel:#121C2E;
+    --panel-2:#182338;
+    --hair:#26344B;
+    --paper:#F4F1E9;
+    --gold:#C9A227;
+    --gold-dim:#8A7326;
+    --signal:#5BC98D;
+    --muted:#8B96A5;
+    --text:#E7E4DA;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--gold); color:var(--ink);}
+  a{color:inherit;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 28px;}
+  h1,h2,h3{font-family:'IBM Plex Serif', serif; font-weight:600; letter-spacing:-0.01em;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+  }
+
+  /* NAV */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,18,32,0.88);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--hair);
+  }
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:60px;}
+  .brand{font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:0.05em; color:var(--paper);}
+  .brand span{color:var(--gold);}
+  .navlinks{display:flex; gap:28px; font-size:13px; font-family:'IBM Plex Mono', monospace;}
+  .navlinks a{color:var(--muted); text-decoration:none; transition:color .2s;}
+  .navlinks a:hover{color:var(--paper);}
+  @media (max-width:640px){.navlinks{display:none;}}
+
+  /* HERO */
+  header.hero{padding:88px 0 40px; position:relative;}
+  .hero .eyebrow{display:flex; align-items:center; gap:8px; margin-bottom:18px;}
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--signal); box-shadow:0 0 8px var(--signal); animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.35;}}
+  h1.name{font-size:clamp(34px,5.6vw,58px); line-height:1.05; color:var(--paper); margin-bottom:10px;}
+  .role{font-size:clamp(16px,2vw,20px); color:var(--muted); font-weight:400; max-width:640px; margin-bottom:30px;}
+  .role b{color:var(--text); font-weight:500;}
+
+  /* LEDGER TICKER — signature element */
+  .ledger{
+    border-top:1px solid var(--hair);
+    border-bottom:1px solid var(--hair);
+    background:var(--panel);
+    overflow:hidden;
+    white-space:nowrap;
+    margin-top:34px;
+  }
+  .ledger-track{
+    display:inline-flex;
+    animation:scroll 32s linear infinite;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--muted);
+  }
+  .ledger-track span{padding:14px 26px; border-right:1px solid var(--hair); white-space:nowrap;}
+  .ledger-track span b{color:var(--gold); font-weight:600;}
+  @keyframes scroll{0%{transform:translateX(0);} 100%{transform:translateX(-50%);}}
+
+  /* SECTION SHARED */
+  section{padding:76px 0; border-bottom:1px solid var(--hair);}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:36px;}
+  .sec-head h2{font-size:26px; color:var(--paper);}
+  .sec-head .idx{font-family:'IBM Plex Mono', monospace; color:var(--gold-dim); font-size:13px;}
+  .lede{color:var(--muted); max-width:680px; margin-bottom:8px; font-size:15px;}
+
+  /* ABOUT */
+  .about-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:48px;}
+  @media (max-width:800px){.about-grid{grid-template-columns:1fr;}}
+  .about-grid p{color:var(--text); font-size:15.5px; margin-bottom:14px;}
+  .facts{border-left:2px solid var(--gold-dim); padding-left:20px;}
+  .fact{margin-bottom:18px;}
+  .fact .k{font-family:'IBM Plex Mono', monospace; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted);}
+  .fact .v{font-size:15px; color:var(--paper); margin-top:3px;}
+
+  /* SKILLS */
+  .skill-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:22px;}
+  .skill-card{background:var(--panel); border:1px solid var(--hair); padding:20px 22px; border-radius:2px;}
+  .skill-card h3{font-family:'IBM Plex Mono', monospace; font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--gold); margin-bottom:12px; font-weight:600;}
+  .skill-card ul{list-style:none; font-size:14px; color:var(--text);}
+  .skill-card li{padding:5px 0; border-top:1px dashed var(--hair);}
+  .skill-card li:first-child{border-top:none;}
+
+  /* EXPERIENCE TIMELINE */
+  .tl-item{display:grid; grid-template-columns:150px 1fr; gap:24px; padding:26px 0; border-top:1px solid var(--hair);}
+  .tl-item:first-child{border-top:none;}
+  @media (max-width:640px){.tl-item{grid-template-columns:1fr;}}
+  .tl-date{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--gold-dim); padding-top:3px;}
+  .tl-role{font-size:17px; color:var(--paper); font-weight:600; margin-bottom:2px;}
+  .tl-org{font-size:13.5px; color:var(--muted); margin-bottom:12px;}
+  .tl-item ul{padding-left:18px; color:var(--text); font-size:14.5px;}
+  .tl-item li{margin-bottom:6px;}
+
+  /* PROJECTS */
+  .proj-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:22px;}
+  .proj-card{background:var(--panel); border:1px solid var(--hair); padding:24px; display:flex; flex-direction:column; transition:border-color .2s, transform .2s;}
+  .proj-card:hover{border-color:var(--gold-dim); transform:translateY(-2px);}
+  .proj-tag{font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--signal); margin-bottom:10px;}
+  .proj-card h3{font-size:17px; color:var(--paper); margin-bottom:10px;}
+  .proj-card p{font-size:14px; color:var(--muted); margin-bottom:16px; flex-grow:1;}
+  .proj-stack{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;}
+  .proj-stack span{font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--text); background:var(--panel-2); border:1px solid var(--hair); padding:3px 8px;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--ink); background:var(--gold); padding:10px 16px; text-decoration:none; width:fit-content;
+    border:1px solid var(--gold); transition:background .2s, color .2s;
+  }
+  .btn:hover{background:transparent; color:var(--gold);}
+  .btn.ghost{background:transparent; color:var(--paper); border-color:var(--hair);}
+  .btn.ghost:hover{border-color:var(--gold); color:var(--gold);}
+  .featured{grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:0; padding:0; overflow:hidden;}
+  @media (max-width:760px){.featured{grid-template-columns:1fr;}}
+  .featured .fx-copy{padding:30px;}
+  .featured .fx-visual{background:linear-gradient(160deg,#182338,#0B1220); padding:30px; display:flex; flex-direction:column; justify-content:center; border-left:1px solid var(--hair);}
+  @media (max-width:760px){.featured .fx-visual{border-left:none; border-top:1px solid var(--hair);}}
+  .mini-stat{display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--muted); padding:9px 0; border-top:1px dashed var(--hair);}
+  .mini-stat:first-child{border-top:none;}
+  .mini-stat b{color:var(--paper);}
+
+  /* EDUCATION + CONTACT */
+  .edu{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:20px;}
+  .edu h3{color:var(--paper); font-size:18px; margin-bottom:4px;}
+  .edu .org{color:var(--muted); font-size:14px;}
+  .edu .gpa{font-family:'IBM Plex Mono', monospace; color:var(--gold); font-size:13px; text-align:right;}
+
+  footer{padding:56px 0 40px;}
+  .contact-grid{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:26px;}
+  .contact-grid h2{color:var(--paper); font-size:28px; max-width:460px;}
+  .contact-links{display:flex; flex-direction:column; gap:10px; font-family:'IBM Plex Mono', monospace; font-size:14px;}
+  .contact-links a{text-decoration:none; color:var(--text); border-bottom:1px solid var(--hair); padding-bottom:2px; width:fit-content;}
+  .contact-links a:hover{color:var(--gold); border-color:var(--gold);}
+  .fine{margin-top:40px; font-size:12px; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">I.M.W.K.PUTRA<span>_</span></div>
+    <div class="navlinks">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span> Available for new opportunities — Batam / Remote</div>
+    <h1 class="name">I Made Wisnu<br>Kusuma Putra</h1>
+    <p class="role">Backend-leaning <b>Full-Stack Engineer</b> — 3+ years building high-availability transaction systems for banking (BNI) and leasing (Mitsui). C# / .NET 8 / ASP.NET Core, SQL Server, and RESTful integrations, now extending into <b>Blazor</b> and <b>.NET MAUI</b>.</p>
+  </div>
+  <div class="ledger">
+    <div class="ledger-track">
+      <span><b>03+</b> years enterprise backend</span>
+      <span><b>BNI</b> banking transaction systems</span>
+      <span><b>Mitsui Leasing</b> credit decision engine</span>
+      <span><b>SQL Server</b> query & index tuning</span>
+      <span><b>JWT / RBAC</b> secure integrations</span>
+      <span><b>Clean Architecture</b> · SOLID · CQRS</span>
+      <span><b>03+</b> years enterprise backend</span>
+      <span><b>BNI</b> banking transaction systems</span>
+      <span><b>Mitsui Leasing</b> credit decision engine</span>
+      <span><b>SQL Server</b> query & index tuning</span>
+      <span><b>JWT / RBAC</b> secure integrations</span>
+      <span><b>Clean Architecture</b> · SOLID · CQRS</span>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">§ 01</span><h2>About</h2></div>
+    <div class="about-grid">
+      <div>
+        <p>I build backend systems for institutions where a wrong decimal or a missed audit row is not an option. At Bank Negara Indonesia I worked on RESTful APIs and SQL Server logic behind high-volume transaction data, and at Mitsui Leasing Capital I engineer the Credit Decision Engine and the financial calculation modules that drive contract processing.</p>
+        <p>My work sits at the intersection of correctness and speed: optimizing stored procedures and indexing strategies so reporting stays fast under load, while keeping authentication, authorization, and audit trails airtight. I'm now applying that same discipline to full-stack delivery — Blazor, .NET MAUI, and cross-platform interfaces — for teams that need one engineer who can own a feature from schema to screen.</p>
+      </div>
+      <div class="facts">
+        <div class="fact"><div class="k">Based in</div><div class="v">Jakarta, Indonesia</div></div>
+        <div class="fact"><div class="k">Core stack</div><div class="v">C# · .NET 8 · ASP.NET Core · SQL Server</div></div>
+        <div class="fact"><div class="k">Sectors</div><div class="v">Banking, Leasing / Finance, Enterprise SaaS</div></div>
+        <div class="fact"><div class="k">Education</div><div class="v">University of Mataram — GPA 3.53</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">§ 02</span><h2>Skills</h2></div>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <h3>Languages & Frameworks</h3>
+        <ul>
+          <li>C#, .NET 8 / .NET Core</li>
+          <li>ASP.NET Core Web API</li>
+          <li>Entity Framework Core, LINQ</li>
+          <li>Vue.js, AngularJS, ReactJS</li>
+          <li>Blazor, .NET MAUI (in progress)</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>Architecture</h3>
+        <ul>
+          <li>Microservices Architecture</li>
+          <li>Clean Architecture</li>
+          <li>RESTful API Design</li>
+          <li>SOLID Principles, CQRS</li>
+          <li>Distributed Systems</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>Data & Performance</h3>
+        <ul>
+          <li>SQL Server, Stored Procedures</li>
+          <li>Query Optimization</li>
+          <li>Non-Clustered Indexing</li>
+          <li>Execution Plan Tuning</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>Security & Ops</h3>
+        <ul>
+          <li>JWT, Claims-Based Auth</li>
+          <li>Role-Based Access Control</li>
+          <li>Git, CI/CD (Jenkins)</li>
+          <li>Swagger / OpenAPI, Postman</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">§ 03</span><h2>Experience</h2></div>
+
+    <div class="tl-item">
+      <div class="tl-date">Apr 2026 —<br>Present</div>
+      <div>
+        <div class="tl-role">Software Engineer / .NET Developer</div>
+        <div class="tl-org">PT Mitsui Leasing Capital Indonesia — Jakarta</div>
+        <ul>
+          <li>Engineer interactive Vue.js modules for the Credit Decision Engine, integrated into the core enterprise system via an iframe architecture on .NET 8+.</li>
+          <li>Built automated financial document generation and transaction logic across financing products using .NET 8+ and SQL Server stored procedures.</li>
+          <li>Refactored database schemas and non-clustered indexes, cutting execution time on high-throughput reporting and contract processing.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date">Jun 2025 —<br>Feb 2026</div>
+      <div>
+        <div class="tl-role">Backend Developer / .NET Developer</div>
+        <div class="tl-org">Bank Negara Indonesia (BNI) — Jakarta</div>
+        <ul>
+          <li>Developed and maintained RESTful APIs in C# / ASP.NET, plus token-based auth and authorization for enterprise banking applications.</li>
+          <li>Designed and optimized SQL Server queries and stored procedures for high-volume transaction data.</li>
+          <li>Built an Enterprise Financial Simulation System and an Audit Trail & Data Integrity System capturing user, timestamp, and row-level changes.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date">May 2024 —<br>May 2025</div>
+      <div>
+        <div class="tl-role">.NET Developer</div>
+        <div class="tl-org">PT Indocyber Global Teknologi — Jakarta</div>
+        <ul>
+          <li>Built an Employee Reimbursement Management System and an Employee Inventory Management System — .NET (C#) backend, AngularJS frontend.</li>
+          <li>Engineered multi-tier approval workflows for claim reimbursements and item allocation tracking.</li>
+          <li>Designed database schemas and stored procedures managing financial transactions and asset records.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">§ 04</span><h2>Projects</h2></div>
+    <p class="lede" style="margin-bottom:30px;">Selected work from banking and leasing engagements.</p>
+
+    <div class="proj-grid">
+      <div class="proj-card">
+        <div class="proj-tag">Mitsui Leasing</div>
+        <h3>Credit Decision Engine (CDE)</h3>
+        <p>Vue.js evaluation modules embedded into the core leasing system via iframe architecture, streamlining financial evaluation workflows on .NET 8+.</p>
+        <div class="proj-stack"><span>.NET 8</span><span>Vue.js</span><span>SQL Server</span></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-tag">Bank Negara Indonesia</div>
+        <h3>Enterprise Financial Simulation System</h3>
+        <p>Reviewed and implemented complex business rules spanning multiple data sources to simulate financial outcomes for enterprise banking workflows.</p>
+        <div class="proj-stack"><span>C#</span><span>ASP.NET</span><span>Stored Procedures</span></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-tag">Bank Negara Indonesia</div>
+        <h3>Audit Trail & Data Integrity System</h3>
+        <p>Designed audit mechanisms capturing user, timestamp, file metadata, and row-level changes to guarantee traceability across banking data.</p>
+        <div class="proj-stack"><span>SQL Server</span><span>RBAC</span><span>JWT</span></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-tag">Indocyber Global Teknologi</div>
+        <h3>Employee Reimbursement System</h3>
+        <p>Multi-tier approval workflow for claim reimbursements and item allocation tracking, with a .NET backend and AngularJS front end.</p>
+        <div class="proj-stack"><span>.NET</span><span>AngularJS</span><span>SQL Server</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="education" style="padding-bottom:56px;">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">§ 05</span><h2>Education</h2></div>
+    <div class="edu">
+      <div>
+        <h3>University of Mataram</h3>
+        <div class="org">Bachelor's Degree · Graduated September 2023</div>
+      </div>
+      <div class="gpa">GPA 3.53 / 4.00</div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="contact-grid">
+      <h2>Let's talk about the Batam full-stack role.</h2>
+      <div class="contact-links">
+        <a href="mailto:wisnukusuma99@gmail.com">wisnukusuma99@gmail.com</a>
+        <a href="tel:+6287882030450">+62 878 8203 0450</a>
+        <a href="https://linkedin.com/in/mdwisnukusuma" target="_blank">linkedin.com/in/mdwisnukusuma</a>
+      </div>
+    </div>
+    <div class="fine">Jakarta, Indonesia — open to relocation / hybrid arrangements for Batam.</div>
+  </div>
+</footer>
+
+</body>
+</html>
