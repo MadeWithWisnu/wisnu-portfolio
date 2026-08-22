@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Condominium Management System — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220; --panel:#121C2E; --panel-2:#182338; --hair:#26344B;
+    --paper:#F4F1E9; --gold:#C9A227; --gold-dim:#8A7326; --signal:#5BC98D;
+    --warn:#E0A458; --danger:#E0685C; --muted:#8B96A5; --text:#E7E4DA;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--ink); color:var(--text); font-family:'Inter',sans-serif;}
+  a{color:var(--gold); text-decoration:none;}
+  h1,h2,h3{font-family:'IBM Plex Serif',serif; font-weight:600;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
+
+  header{border-bottom:1px solid var(--hair); background:var(--panel); padding:20px 0;}
+  header .wrap{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;}
+  .back{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted);}
+  .back:hover{color:var(--gold);}
+  header h1{font-size:19px; color:var(--paper);}
+  .badge{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--signal); border:1px solid var(--hair); padding:4px 10px;}
+
+  main{padding:36px 0 80px;}
+  .stat-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:34px;}
+  .stat{background:var(--panel); border:1px solid var(--hair); padding:18px 20px;}
+  .stat .k{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:8px;}
+  .stat .v{font-size:26px; color:var(--paper); font-family:'IBM Plex Serif',serif;}
+  .stat .v small{font-size:13px; color:var(--muted); font-family:'Inter',sans-serif;}
+
+  .tabs{display:flex; gap:2px; margin-bottom:22px; border-bottom:1px solid var(--hair); flex-wrap:wrap;}
+  .tab{padding:11px 18px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent;}
+  .tab.active{color:var(--paper); border-bottom-color:var(--gold);}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  table{width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--hair);}
+  th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:12px 14px; border-bottom:1px solid var(--hair); background:var(--panel-2);}
+  td{padding:12px 14px; font-size:13.5px; border-bottom:1px solid var(--hair); color:var(--text);}
+  tr:last-child td{border-bottom:none;}
+  .status{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; padding:3px 8px; border:1px solid; display:inline-block;}
+  .status.paid{color:var(--signal); border-color:var(--signal);}
+  .status.due{color:var(--warn); border-color:var(--warn);}
+  .status.overdue{color:var(--danger); border-color:var(--danger);}
+
+  .toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;}
+  .toolbar h2{font-size:16px; color:var(--paper);}
+  input, select{
+    background:var(--panel-2); border:1px solid var(--hair); color:var(--text); padding:9px 12px;
+    font-family:'Inter',sans-serif; font-size:13.5px; outline:none;
+  }
+  input:focus, select:focus{border-color:var(--gold-dim);}
+  .form-row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; background:var(--panel); border:1px solid var(--hair); padding:16px;}
+  .form-row input, .form-row select{flex:1; min-width:120px;}
+  button{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.05em;
+    background:var(--gold); color:var(--ink); border:1px solid var(--gold); padding:9px 16px; cursor:pointer;
+  }
+  button:hover{background:transparent; color:var(--gold);}
+  button.ghost{background:transparent; color:var(--text); border-color:var(--hair);}
+  button.ghost:hover{border-color:var(--gold); color:var(--gold);}
+  button.small{padding:5px 10px; font-size:10.5px;}
+
+  .empty{color:var(--muted); font-size:13px; padding:20px; text-align:center; font-family:'IBM Plex Mono',monospace;}
+  .note{font-size:12px; color:var(--muted); margin-top:10px; font-family:'IBM Plex Mono',monospace;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="back" href="index.html">← Back to portfolio</a>
+    <h1>Grand Meridian Residences <span class="badge">Internal Ops · Demo</span></h1>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="stat-row">
+      <div class="stat"><div class="k">Total Units</div><div class="v" id="statUnits">—</div></div>
+      <div class="stat"><div class="k">Occupied</div><div class="v" id="statOccupied">—</div></div>
+      <div class="stat"><div class="k">Fees Collected (MTD)</div><div class="v" id="statCollected">—</div></div>
+      <div class="stat"><div class="k">Facility Bookings Today</div><div class="v" id="statBookings">—</div></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="residents">Residents & Units</div>
+      <div class="tab" data-tab="payments">Maintenance Fees</div>
+      <div class="tab" data-tab="facilities">Facility Bookings</div>
+    </div>
+
+    <!-- RESIDENTS -->
+    <div class="panel active" id="panel-residents">
+      <div class="toolbar">
+        <h2>Resident Registry</h2>
+        <button class="ghost small" onclick="toggleForm('res')">+ Add Resident</button>
+      </div>
+      <div class="form-row" id="form-res" style="display:none;">
+        <input id="res-unit" placeholder="Unit no. e.g. 12-04">
+        <input id="res-name" placeholder="Resident name">
+        <select id="res-type"><option>Owner</option><option>Tenant</option></select>
+        <input id="res-phone" placeholder="Phone">
+        <button onclick="addResident()">Save</button>
+      </div>
+      <table>
+        <thead><tr><th>Unit</th><th>Resident</th><th>Type</th><th>Phone</th><th>Status</th><th></th></tr></thead>
+        <tbody id="residentsBody"></tbody>
+      </table>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="panel" id="panel-payments">
+      <div class="toolbar">
+        <h2>Maintenance Fee Tracking</h2>
+        <span class="note">Auto-generated monthly per unit · click status to cycle</span>
+      </div>
+      <table>
+        <thead><tr><th>Unit</th><th>Resident</th><th>Amount</th><th>Period</th><th>Status</th></tr></thead>
+        <tbody id="paymentsBody"></tbody>
+      </table>
+    </div>
+
+    <!-- FACILITIES -->
+    <div class="panel" id="panel-facilities">
+      <div class="toolbar">
+        <h2>Facility Bookings</h2>
+        <button class="ghost small" onclick="toggleForm('bk')">+ New Booking</button>
+      </div>
+      <div class="form-row" id="form-bk" style="display:none;">
+        <select id="bk-facility"><option>Function Hall</option><option>Swimming Pool</option><option>BBQ Pit</option><option>Gym</option><option>Tennis Court</option></select>
+        <input id="bk-unit" placeholder="Unit no.">
+        <input id="bk-date" type="date">
+        <input id="bk-time" placeholder="Time slot e.g. 18:00–20:00">
+        <button onclick="addBooking()">Book</button>
+      </div>
+      <table>
+        <thead><tr><th>Facility</th><th>Unit</th><th>Date</th><th>Time Slot</th><th></th></tr></thead>
+        <tbody id="bookingsBody"></tbody>
+      </table>
+    </div>
+
+    <p class="note">Prototype front end for a proposed internal condominium management platform — demonstrates UI/workflow and schema thinking. Data held in-memory only; production version pairs ASP.NET Core Web API + Blazor components with a SQL Server schema (Units, Residents, Ledger, Bookings) and claims-based RBAC for staff vs. resident roles.</p>
+  </div>
+</main>
+
+<script>
+// ---- in-memory demo state ----
+let residents = [
+  {unit:'08-01', name:'Priya Nathan', type:'Owner', phone:'+65 9123 4410', status:'Active'},
+  {unit:'12-04', name:'Daniel Teo', type:'Tenant', phone:'+65 8823 0021', status:'Active'},
+  {unit:'03-15', name:'Farah Aziz', type:'Owner', phone:'+65 9004 5567', status:'Active'},
+  {unit:'19-02', name:'Wei Ling Ong', type:'Tenant', phone:'+65 8712 9930', status:'Move-out pending'},
+];
+
+let payments = [
+  {unit:'08-01', name:'Priya Nathan', amount:'S$ 320', period:'Aug 2026', status:'paid'},
+  {unit:'12-04', name:'Daniel Teo', amount:'S$ 280', period:'Aug 2026', status:'due'},
+  {unit:'03-15', name:'Farah Aziz', amount:'S$ 320', period:'Aug 2026', status:'paid'},
+  {unit:'19-02', name:'Wei Ling Ong', amount:'S$ 260', period:'Jul 2026', status:'overdue'},
+];
+
+let bookings = [
+  {facility:'Function Hall', unit:'08-01', date:'2026-08-24', time:'18:00–21:00'},
+  {facility:'BBQ Pit', unit:'12-04', date:'2026-08-22', time:'19:00–21:00'},
+];
+
+const statusCycle = {paid:'due', due:'overdue', overdue:'paid'};
+
+function render(){
+  // stats
+  document.getElementById('statUnits').innerHTML = residents.length + ' <small>tracked</small>';
+  document.getElementById('statOccupied').innerHTML = residents.filter(r=>r.status==='Active').length + ' <small>active</small>';
+  const collected = payments.filter(p=>p.status==='paid').length;
+  document.getElementById('statCollected').innerHTML = collected + '/' + payments.length + ' <small>units</small>';
+  document.getElementById('statBookings').innerHTML = bookings.length + ' <small>this week</small>';
+
+  // residents
+  const rb = document.getElementById('residentsBody');
+  rb.innerHTML = residents.length ? residents.map((r,i)=>`
+    <tr>
+      <td class="mono">${r.unit}</td>
+      <td>${r.name}</td>
+      <td>${r.type}</td>
+      <td class="mono">${r.phone}</td>
+      <td>${r.status}</td>
+      <td><button class="ghost small" onclick="removeResident(${i})">Remove</button></td>
+    </tr>`).join('') : `<tr><td colspan="6" class="empty">No residents yet</td></tr>`;
+
+  // payments
+  const pb = document.getElementById('paymentsBody');
+  pb.innerHTML = payments.length ? payments.map((p,i)=>`
+    <tr>
+      <td class="mono">${p.unit}</td>
+      <td>${p.name}</td>
+      <td class="mono">${p.amount}</td>
+      <td class="mono">${p.period}</td>
+      <td><span class="status ${p.status}" style="cursor:pointer" onclick="cycleStatus(${i})">${p.status}</span></td>
+    </tr>`).join('') : `<tr><td colspan="5" class="empty">No fee records</td></tr>`;
+
+  // bookings
+  const bb = document.getElementById('bookingsBody');
+  bb.innerHTML = bookings.length ? bookings.map((b,i)=>`
+    <tr>
+      <td>${b.facility}</td>
+      <td class="mono">${b.unit}</td>
+      <td class="mono">${b.date}</td>
+      <td class="mono">${b.time}</td>
+      <td><button class="ghost small" onclick="removeBooking(${i})">Cancel</button></td>
+    </tr>`).join('') : `<tr><td colspan="5" class="empty">No bookings scheduled</td></tr>`;
+}
+
+function cycleStatus(i){ payments[i].status = statusCycle[payments[i].status]; render(); }
+
+function toggleForm(id){
+  const f = document.getElementById('form-'+id);
+  f.style.display = f.style.display==='none' ? 'flex' : 'none';
+}
+
+function addResident(){
+  const unit = document.getElementById('res-unit').value.trim();
+  const name = document.getElementById('res-name').value.trim();
+  const type = document.getElementById('res-type').value;
+  const phone = document.getElementById('res-phone').value.trim();
+  if(!unit || !name){ alert('Unit and resident name are required.'); return; }
+  residents.push({unit, name, type, phone: phone||'—', status:'Active'});
+  payments.push({unit, name, amount:'S$ 280', period:'Aug 2026', status:'due'});
+  document.getElementById('res-unit').value='';
+  document.getElementById('res-name').value='';
+  document.getElementById('res-phone').value='';
+  render();
+}
+function removeResident(i){ residents.splice(i,1); render(); }
+
+function addBooking(){
+  const facility = document.getElementById('bk-facility').value;
+  const unit = document.getElementById('bk-unit').value.trim();
+  const date = document.getElementById('bk-date').value;
+  const time = document.getElementById('bk-time').value.trim();
+  if(!unit || !date || !time){ alert('Unit, date, and time slot are required.'); return; }
+  bookings.push({facility, unit, date, time});
+  document.getElementById('bk-unit').value='';
+  document.getElementById('bk-date').value='';
+  document.getElementById('bk-time').value='';
+  render();
+}
+function removeBooking(i){ bookings.splice(i,1); render(); }
+
+// tabs
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+  });
+});
+
+render();
+</script>
+</body>
+</html>
