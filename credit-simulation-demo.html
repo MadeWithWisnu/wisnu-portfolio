@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Simulation Engine — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220; --panel:#121C2E; --panel-2:#182338; --hair:#26344B;
+    --paper:#F4F1E9; --gold:#C9A227; --gold-dim:#8A7326; --signal:#5BC98D;
+    --warn:#E0A458; --danger:#E0685C; --muted:#8B96A5; --text:#E7E4DA;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--ink); color:var(--text); font-family:'Inter',sans-serif;}
+  a{color:var(--gold); text-decoration:none;}
+  h1,h2,h3{font-family:'IBM Plex Serif',serif; font-weight:600;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
+
+  header{border-bottom:1px solid var(--hair); background:var(--panel); padding:20px 0;}
+  header .wrap{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;}
+  .back{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted);}
+  .back:hover{color:var(--gold);}
+  header h1{font-size:19px; color:var(--paper);}
+  .badge{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--signal); border:1px solid var(--hair); padding:4px 10px;}
+
+  main{padding:36px 0 80px;}
+  .grid{display:grid; grid-template-columns:380px 1fr; gap:24px;}
+  @media (max-width:860px){.grid{grid-template-columns:1fr;}}
+
+  .card{background:var(--panel); border:1px solid var(--hair); padding:24px;}
+  .card h2{font-size:16px; color:var(--paper); margin-bottom:18px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:6px;}
+  input, select{
+    width:100%; background:var(--panel-2); border:1px solid var(--hair); color:var(--text); padding:10px 12px;
+    font-family:'Inter',sans-serif; font-size:14px; outline:none;
+  }
+  input:focus, select:focus{border-color:var(--gold-dim);}
+  .scheme-toggle{display:flex; gap:8px;}
+  .scheme-toggle button{flex:1;}
+  button{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.05em;
+    background:var(--panel-2); color:var(--text); border:1px solid var(--hair); padding:9px 14px; cursor:pointer;
+  }
+  button.active{background:var(--gold); color:var(--ink); border-color:var(--gold);}
+  .primary{width:100%; background:var(--gold); color:var(--ink); border-color:var(--gold); padding:12px; margin-top:6px; font-size:13px;}
+  .primary:hover{background:transparent; color:var(--gold);}
+
+  .result-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:24px;}
+  .result{background:var(--panel); border:1px solid var(--hair); padding:16px 18px;}
+  .result .k{font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-bottom:6px;}
+  .result .v{font-size:21px; color:var(--paper); font-family:'IBM Plex Serif',serif;}
+
+  .verdict{display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border:1px solid; margin-bottom:24px;}
+  .verdict.approve{border-color:var(--signal); background:rgba(91,201,141,0.07);}
+  .verdict.review{border-color:var(--warn); background:rgba(224,164,88,0.07);}
+  .verdict.reject{border-color:var(--danger); background:rgba(224,104,92,0.07);}
+  .verdict .label{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.08em;}
+  .verdict.approve .label{color:var(--signal);}
+  .verdict.review .label{color:var(--warn);}
+  .verdict.reject .label{color:var(--danger);}
+  .verdict .dti{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted);}
+
+  table{width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--hair);}
+  th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:10px 12px; border-bottom:1px solid var(--hair); background:var(--panel-2); position:sticky; top:0;}
+  td{padding:9px 12px; font-size:13px; border-bottom:1px solid var(--hair); color:var(--text);}
+  tr:last-child td{border-bottom:none;}
+  .table-wrap{max-height:360px; overflow-y:auto; border:1px solid var(--hair); border-top:none;}
+  .table-wrap table{border:none;}
+
+  .note{font-size:12px; color:var(--muted); margin-top:24px; font-family:'IBM Plex Mono',monospace;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="back" href="index.html">← Back to portfolio</a>
+    <h1>Credit Simulation Engine <span class="badge">Lending Ops · Demo</span></h1>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="grid">
+      <div class="card">
+        <h2>Loan Parameters</h2>
+        <div class="field">
+          <label>Principal (S$)</label>
+          <input type="number" id="principal" value="50000" min="0">
+        </div>
+        <div class="field">
+          <label>Tenor (months)</label>
+          <input type="number" id="tenor" value="24" min="1">
+        </div>
+        <div class="field">
+          <label>Annual interest rate (%)</label>
+          <input type="number" id="rate" value="8.5" step="0.1" min="0">
+        </div>
+        <div class="field">
+          <label>Interest scheme</label>
+          <div class="scheme-toggle">
+            <button id="schemeFlat" class="active" onclick="setScheme('flat')">Flat</button>
+            <button id="schemeEff" onclick="setScheme('effective')">Effective</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Applicant monthly income (S$)</label>
+          <input type="number" id="income" value="6000" min="0">
+        </div>
+        <div class="field">
+          <label>Existing monthly debt (S$)</label>
+          <input type="number" id="debt" value="400" min="0">
+        </div>
+        <button class="primary" onclick="simulate()">Run Simulation</button>
+      </div>
+
+      <div>
+        <div class="result-row">
+          <div class="result"><div class="k">Monthly Installment</div><div class="v" id="rMonthly">—</div></div>
+          <div class="result"><div class="k">Total Interest</div><div class="v" id="rInterest">—</div></div>
+          <div class="result"><div class="k">Total Repayment</div><div class="v" id="rTotal">—</div></div>
+        </div>
+
+        <div class="verdict review" id="verdictBox">
+          <div>
+            <div class="label" id="verdictLabel">Run a simulation to see the decision</div>
+          </div>
+          <div class="dti" id="verdictDti">DTI —</div>
+        </div>
+
+        <div class="card" style="padding:0;">
+          <h2 style="padding:20px 20px 0;">Amortization Schedule</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Period</th><th>Installment</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+              <tbody id="scheduleBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <p class="note">Prototype simulation front end — replicates the calculation and decisioning logic behind the Credit Decision Engine and Financial Simulation System referenced in the portfolio. Production version runs on ASP.NET Core with the amortization and scoring logic in C# services, persisted to SQL Server, and exposed via a Blazor front end.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+let scheme = 'flat';
+function setScheme(s){
+  scheme = s;
+  document.getElementById('schemeFlat').classList.toggle('active', s==='flat');
+  document.getElementById('schemeEff').classList.toggle('active', s==='effective');
+}
+
+function fmt(n){
+  return 'S$ ' + n.toLocaleString('en-SG', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function simulate(){
+  const principal = parseFloat(document.getElementById('principal').value) || 0;
+  const tenor = parseInt(document.getElementById('tenor').value) || 1;
+  const annualRate = parseFloat(document.getElementById('rate').value) || 0;
+  const income = parseFloat(document.getElementById('income').value) || 0;
+  const debt = parseFloat(document.getElementById('debt').value) || 0;
+
+  const schedule = [];
+  let monthly, totalInterest, totalRepay;
+
+  if(scheme === 'flat'){
+    const totalInt = principal * (annualRate/100) * (tenor/12);
+    const principalPerMonth = principal / tenor;
+    const interestPerMonth = totalInt / tenor;
+    monthly = principalPerMonth + interestPerMonth;
+    let balance = principal;
+    for(let m=1; m<=tenor; m++){
+      balance -= principalPerMonth;
+      schedule.push({period:m, installment:monthly, principal:principalPerMonth, interest:interestPerMonth, balance: Math.max(balance,0)});
+    }
+    totalInterest = totalInt;
+    totalRepay = principal + totalInt;
+  } else {
+    const r = (annualRate/100)/12;
+    monthly = r === 0 ? principal/tenor : principal * r / (1 - Math.pow(1+r, -tenor));
+    let balance = principal;
+    let sumInterest = 0;
+    for(let m=1; m<=tenor; m++){
+      const interestPortion = balance * r;
+      const principalPortion = monthly - interestPortion;
+      balance -= principalPortion;
+      sumInterest += interestPortion;
+      schedule.push({period:m, installment:monthly, principal:principalPortion, interest:interestPortion, balance: Math.max(balance,0)});
+    }
+    totalInterest = sumInterest;
+    totalRepay = principal + sumInterest;
+  }
+
+  document.getElementById('rMonthly').textContent = fmt(monthly);
+  document.getElementById('rInterest').textContent = fmt(totalInterest);
+  document.getElementById('rTotal').textContent = fmt(totalRepay);
+
+  const dti = income > 0 ? ((debt + monthly) / income) * 100 : 100;
+  const box = document.getElementById('verdictBox');
+  const label = document.getElementById('verdictLabel');
+  box.classList.remove('approve','review','reject');
+  if(dti <= 35){
+    box.classList.add('approve');
+    label.textContent = 'Decision: Approve — within standard debt-to-income threshold';
+  } else if(dti <= 50){
+    box.classList.add('review');
+    label.textContent = 'Decision: Manual Review — elevated debt-to-income ratio';
+  } else {
+    box.classList.add('reject');
+    label.textContent = 'Decision: Reject — debt-to-income ratio exceeds policy limit';
+  }
+  document.getElementById('verdictDti').textContent = 'DTI ' + dti.toFixed(1) + '%';
+
+  document.getElementById('scheduleBody').innerHTML = schedule.map(row => `
+    <tr>
+      <td class="mono">${row.period}</td>
+      <td class="mono">${fmt(row.installment)}</td>
+      <td class="mono">${fmt(row.principal)}</td>
+      <td class="mono">${fmt(row.interest)}</td>
+      <td class="mono">${fmt(row.balance)}</td>
+    </tr>`).join('');
+}
+
+simulate();
+</script>
+</body>
+</html>
